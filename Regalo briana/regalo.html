@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Libro de Briana</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* --- ESTILOS GENERALES Y FONDO --- */
+        body {
+            margin: 0;
+            padding: 0;
+            /* Fondo degradado de rosa a púrpura con un patrón decorativo sutil */
+            background: 
+                radial-gradient(circle at center, rgba(255,192,203,0.5) 0%, rgba(128,0,128,0.7) 100%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C27B0' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            font-family: 'Lora', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            color: #4a148c; /* Color de texto principal púrpura oscuro */
+        }
+
+        /* --- EL CONTENEDOR DEL LIBRO --- */
+        .libro-container {
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            height: 80vh; /* Altura del libro */
+            background: linear-gradient(to right, #f8bbd0, #e1bee7); /* Degradado suave en las páginas */
+            border-radius: 20px;
+            /* Sombra y borde para dar efecto de libro decorado */
+            box-shadow: 
+                0 15px 30px rgba(74, 20, 140, 0.5),
+                inset 0 0 60px rgba(255,255,255,0.5);
+            border: 8px solid #ba68c8; /* Borde decorativo púrpura */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Elemento decorativo en el lomo del libro */
+        .libro-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20px;
+            bottom: 0;
+            width: 2px;
+            background: rgba(74, 20, 140, 0.2);
+            box-shadow: 1px 0 2px rgba(255,255,255,0.3);
+        }
+
+        /* --- ESTILOS DE LAS PÁGINAS --- */
+        .pagina {
+            flex: 1;
+            padding: 40px 50px;
+            box-sizing: border-box;
+            display: none; /* Se ocultan todas por defecto */
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: center;
+            overflow-y: auto;
+            /* Animación de entrada suave */
+            animation: fadeInPage 0.6s ease-in-out;
+        }
+
+        .pagina.activa {
+            display: flex; /* Solo la activa se muestra */
+        }
+
+        /* --- TIPOGRAFÍA Y DECORACIÓN --- */
+        h2 {
+            font-family: 'Dancing Script', cursive;
+            color: #880e4f; /* Rosa oscuro intenso para títulos */
+            font-size: 2.8em;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            position: relative;
+        }
+
+        /* Línea decorativa debajo de los títulos */
+        h2::after {
+            content: '♥';
+            display: block;
+            font-size: 0.4em;
+            color: #ba68c8;
+            margin-top: 5px;
+        }
+
+        p {
+            font-size: 1.15em;
+            line-height: 1.7;
+            color: #4a148c;
+            margin-bottom: 20px;
+        }
+
+        /* --- FOTO Y REPRODUCTOR (Página Final) --- */
+        .contenido-final {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .marco-foto {
+            width: 220px;
+            height: 220px;
+            /* Marco decorativo elaborado */
+            border: 5px solid #e91e63;
+            outline: 3px dashed #ba68c8;
+            border-radius: 50%; /* Forma circular */
+            padding: 5px;
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(136, 14, 79, 0.3);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .marco-foto img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        audio {
+            width: 90%;
+            max-width: 350px;
+            height: 40px;
+            border-radius: 20px;
+            margin-top: 10px;
+            /* Intento de estilizar el reproductor (varía según el navegador) */
+            filter: sepia(20%) hue-rotate(280deg) saturate(150%);
+        }
+
+        /* --- BOTONES DE NAVEGACIÓN --- */
+        .controles-container {
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.4); /* Fondo semitransparente */
+            border-top: 2px solid #ba68c8;
+        }
+
+        button {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3em;
+            padding: 8px 25px;
+            border: 2px solid #880e4f;
+            border-radius: 25px;
+            /* Degradado de botón tipo joya */
+            background: linear-gradient(to bottom, #ec407a, #ad1457);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.3);
+            background: linear-gradient(to bottom, #f06292, #c2185b);
+        }
+
+        button:disabled {
+            background: #ce93d8;
+            border-color: #ba68c8;
+            color: #eee;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* --- ANIMACIONES --- */
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="libro-container">
+        
+        <div class="pagina activa" id="pag1">
+            <h2>Capítulo I</h2>
+            <p>
+                 Mi amor, mi vida, mi todo, mi alma,
+todo lo que te falta por saber mi mor,
+todo lo que te dare pronto, espero con
+ansias el dia que nos veamosh :3
+JSDJSDJ DIOOOS TE AMOO TE AMO
+AWWW ESA CARITA MOSHA
+DIOOOOOOOOOS,mor enserio quiero despertarme todos los dias y tenerte a mi lado el saber que estas bien
+esto lo hice llorando ya que AHHHHHH es difiil y a la vez me alegra de tenerte a mi lado mi mor <33
+mi niña prechiocha que aunque me falten
+palabras lo di todo shi? mi corazon te di todo <33..
+            </p>
+        </div>
+
+        <div class="pagina" id="pag2">
+            <h2>Capítulo II</h2>
+            <p>
+                mi mor.. recuerod el dia que te vi el dia que te oi y el dia que realmente te senti, tmomaste mi corazon cansado y frustrado y lo convertiste en algo que ya no se puede deshacer... mi mor te amo te amo con todo lo que se llama alma corzon y te amo con todo lo que pueda prometer... mi mor auqnue aveces pienses mal de mi opines raro o aunque te enojes conmigo tu niño siempre pero SIEMPRE va a estar contigo shi? te amo mushititio mi niña pretiotita <33...
+            </p>
+        </div>
+
+        <div class="pagina" id="pagFinal">
+            <h2>Para Briana</h2>
+            <div class="contenido-final">
+                <div class="marco-foto">
+                    <img src="portada.jpg" alt="Foto de Briana">
+                </div>
+                <p style="font-style: italic; font-size: 1.1em;">
+                    "Y aunque el mundo nos ponga distancia, yo te elijo todos los días..."
+                </p>
+                <audio controls>
+                    <source src="cancion.mp3" type="audio/mpeg">
+                    Tu navegador no soporta el elemento de audio.
+                </audio>
+            </div>
+        </div>
+
+        <div class="controles-container">
+            <button id="btnAnt" onclick="cambiarPagina(-1)" disabled>Anterior</button>
+            <button id="btnSig" onclick="cambiarPagina(1)">Siguiente</button>
+        </div>
+    </div>
+
+    <script>
+        // Variables para controlar la página actual
+        let paginaActual = 1;
+        const totalPaginas = 3; // Tenemos 3 páginas en total
+
+        function cambiarPagina(direccion) {
+            // 1. Ocultar la página que se está viendo actualmente
+            const paginaActiva = document.querySelector('.pagina.activa');
+            if (paginaActiva) {
+                paginaActiva.classList.remove('activa');
+            }
+
+            // 2. Calcular cuál será la nueva página
+            paginaActual += direccion;
+
+            // 3. Asegurarse de no salirse de los límites (ni menos de 1, ni más de 3)
+            if (paginaActual < 1) paginaActual = 1;
+            if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+
+            // 4. Mostrar la nueva página seleccionando por su ID
+            let nuevoId = "";
+            if (paginaActual === 1) nuevoId = "pag1";
+            if (paginaActual === 2) nuevoId = "pag2";
+            if (paginaActual === 3) nuevoId = "pagFinal";
+            
+            document.getElementById(nuevoId).classList.add('activa');
+
+            // 5. Actualizar el estado de los botones (habilitar/deshabilitar)
+            document.getElementById('btnAnt').disabled = (paginaActual === 1);
+            document.getElementById('btnSig').disabled = (paginaActual === totalPaginas);
+        }
+    </script>
+
+</body>
+</html>
